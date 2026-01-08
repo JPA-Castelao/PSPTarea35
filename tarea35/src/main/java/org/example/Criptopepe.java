@@ -53,14 +53,19 @@ public class Criptopepe {
         try {
             //Declaracion de cliente
             HttpClient cliente = HttpClient.newHttpClient();
+            JsonObject moneda = null;
+            String nombreMoneda = "";
+            String simbolo = "";
 
+            int limiteMonedas = 0;
 
             int monedasTotales = peticionGlobalMonedas();
             //
 
             for (int i = 0; i <= monedasTotales; i += 100) {
+
                 HttpRequest peticionMoneda = HttpRequest.newBuilder()
-                        .uri(URI.create("https://api.coinlore.net/api/tickers/?start=&limit=100"))
+                        .uri(URI.create("https://api.coinlore.net/api/tickers/?start=" + i + "&limit=100"))
                         .GET()
                         .build();
 
@@ -71,26 +76,24 @@ public class Criptopepe {
 
                 for (int j = 0; j < arrayJson.size(); j++) {
 
-                    JsonObject moneda = arrayJson.get(j).getAsJsonObject();
-                    String nombreMoneda = moneda.get("name").getAsString().toLowerCase();
-                    String simbolo = moneda.get("symbol").getAsString().toLowerCase();
+                    moneda = arrayJson.get(j).getAsJsonObject();
+                    nombreMoneda = moneda.get("name").getAsString().toLowerCase();
+                    simbolo = moneda.get("symbol").getAsString().toLowerCase();
 
                     if (nombreMoneda.equals(nombre) || simbolo.equals(nombre)) {
                         return moneda;
-                    } else {
-                        return null;
                     }
 
 
                 }
 
             }
+            return moneda;
         } catch (IOException | InterruptedException e) {
 
             System.err.println("ERRO AL BUSCAR MONEDA: " + e.getMessage());
-
+            return null;
         }
-        return null;
 
 
     }
